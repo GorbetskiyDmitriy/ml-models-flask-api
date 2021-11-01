@@ -183,14 +183,14 @@ class ML_models:
     @staticmethod
     def _transform_data(X=None, y=None):
         if X is None:
-            y = pd.DataFrame(y).values.flatten()
+            y = pd.DataFrame(y).sort_index().values.flatten()
             return y
         elif y is None:
-            X = pd.DataFrame(X).values
+            X = pd.DataFrame(X).sort_index().values
             return X
         else:
-            X = pd.DataFrame(X).values
-            y = pd.DataFrame(y).values.flatten()
+            X = pd.DataFrame(X).sort_index().values
+            y = pd.DataFrame(y).sort_index().values.flatten()
             return X, y
 
     def optimize_model_params(self, model_id, X, y, params_to_optimaze,
@@ -344,7 +344,6 @@ class ML_models:
             abort(Response('At least y_predicted or X should be filled'))
         if np.unique(y_true).shape[0] == 2:
             if y_predicted is None:
-                X = self._transform_data(X=X)
                 y_predicted = self.predict_proba(model_id, X, json=False)
             else:
                 y_predicted = self._transform_data(y=y_predicted)
@@ -358,7 +357,6 @@ class ML_models:
                 os.rename('AUC.png', f'AUC_model_{model_id}.png')
         else:
             if y_predicted is None:
-                X = self._transform_data(X=X)
                 y_predicted = self.predict(model_id, X, json=False)
             else:
                 y_predicted = self._transform_data(y=y_predicted)
